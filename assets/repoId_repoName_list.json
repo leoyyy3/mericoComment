@@ -1,0 +1,390 @@
+[
+  {
+    "repoId": "63c4c942-d3fa-4893-9d58-fb45fce0f882",
+    "repoName": "tech_wzkf/js_modules_src"
+  },
+  {
+    "repoId": "dfb5abc9-1f37-4b0e-abab-3c74d9fda02b",
+    "repoName": "tech_wzkf/m_src"
+  },
+  {
+    "repoId": "d57f7bbb-8667-4dd4-b034-b7b2cf92a78b",
+    "repoName": "tech_growth/video_clip_algorithm"
+  },
+  {
+    "repoId": "fbcbfcd7-f0f2-4530-b1f9-9aa153697c46",
+    "repoName": "tech_wzkf/virtual_py"
+  },
+  {
+    "repoId": "9fdef360-e07c-4cb9-bc70-4d1934abc5c8",
+    "repoName": "tech_growth/rpa_dispatch_script_src"
+  },
+  {
+    "repoId": "8c926cd3-b136-4e2f-8934-e014cf78fbe0",
+    "repoName": "tech_wzkf/detail_service_src"
+  },
+  {
+    "repoId": "32c49f56-148f-4530-a5a9-3af86816f281",
+    "repoName": "tech_wzkf/mcp_elasticsearch_src"
+  },
+  {
+    "repoId": "1e6bf613-8964-417c-ab50-1490cd9451e2",
+    "repoName": "tech_wzkf/mcp_service_src"
+  },
+  {
+    "repoId": "5eb059e0-05e8-4b5e-ba9e-9cec07b9fd99",
+    "repoName": "tech_wzkf/browser_extension_src"
+  },
+  {
+    "repoId": "7c2ef800-5cd4-4443-95a6-7a6b670a254f",
+    "repoName": "tech_wzkf/webtool_src"
+  },
+  {
+    "repoId": "fde34604-0a3e-49c7-b4b7-6e5131682051",
+    "repoName": "tech_mobile/growth_ci_bot_src"
+  },
+  {
+    "repoId": "b06e1f33-d6c4-4f5e-804c-c5ca01dfab6c",
+    "repoName": "tech_mobile/analytics_code_ios_src"
+  },
+  {
+    "repoId": "4f2f6ec8-cb56-4e1f-a7a2-3ddee72a869f",
+    "repoName": "tech_mobile/caidao_harmony_src"
+  },
+  {
+    "repoId": "7e4dd753-ca72-4b51-a297-214c0f1b817c",
+    "repoName": "tech_wzkf/pc_src"
+  },
+  {
+    "repoId": "873215aa-fcaf-4b9a-b152-2aa4c43c6d6c",
+    "repoName": "tech_wzkf/wapi_src"
+  },
+  {
+    "repoId": "b9cb3474-aa00-4736-bcda-003722a2befe",
+    "repoName": "tech_wzkf/annual_report_src"
+  },
+  {
+    "repoId": "371495db-7a32-4a45-9952-0e45a26ff68f",
+    "repoName": "tech_wzkf/quote_new_src"
+  },
+  {
+    "repoId": "d9d816ea-97af-4074-b1f7-87d0ee27bdca",
+    "repoName": "tech_wzkf/app_template_src"
+  },
+  {
+    "repoId": "7a792ca9-11f2-40fb-a033-e3bfac187899",
+    "repoName": "tech_wzkf/extend-service"
+  },
+  {
+    "repoId": "86948b41-85f2-43c6-b07f-4fb89e1dc515",
+    "repoName": "tech_wzkf/rpa_desktop_src"
+  },
+  {
+    "repoId": "17a4920f-0cfc-431e-83b7-dfe0132b509d",
+    "repoName": "tech_wzkf/m_new_src"
+  },
+  {
+    "repoId": "116fee2b-61a5-4b24-be91-096b6566579c",
+    "repoName": "tech_wzkf/column_service_src"
+  },
+  {
+    "repoId": "01478f67-b1eb-4b08-905b-6b4b2d74addf",
+    "repoName": "tech_wzkf/video_clips_src"
+  },
+  {
+    "repoId": "b4be66ab-0b9e-45b9-a45f-4c943b01af32",
+    "repoName": "tech_wzkf/wxapp_src"
+  },
+  {
+    "repoId": "5538d488-0764-4069-a093-f13a9a0ca7b2",
+    "repoName": "tech_wzkf/microserver-src"
+  },
+  {
+    "repoId": "c6739ae7-33bd-42e6-af62-355eae6f5eb3",
+    "repoName": "tech_wzkf/basicdata_src"
+  },
+  {
+    "repoId": "72a26fef-5888-4173-82ca-f499b550ceda",
+    "repoName": "tech_mobile/caidao_pro_ios_src"
+  },
+  {
+    "repoId": "336d94f8-a2d5-4a0d-a23b-37d479edecb1",
+    "repoName": "tech_mobile/caidao_ios_src"
+  },
+  {
+    "repoId": "cdbe0d75-1f8d-4034-9e5f-bb98b11687f3",
+    "repoName": "tech_wzkf/nft_api_src"
+  },
+  {
+    "repoId": "92d10001-f710-4fb8-b2d3-eb56daf87d75",
+    "repoName": "tech_mobile/news_android_src"
+  },
+  {
+    "repoId": "7ee37cfb-7e8c-4670-8bd0-085d7f44f14e",
+    "repoName": "tech_wzkf/h5_src"
+  },
+  {
+    "repoId": "1034e1f1-b136-44ac-946f-4cda7c699963",
+    "repoName": "tech_wzkf/pc_new_src"
+  },
+  {
+    "repoId": "b8d274d7-dd7c-4516-9468-ab736bf8d657",
+    "repoName": "tech_mobile/caidao_pro_android_src"
+  },
+  {
+    "repoId": "493042a6-3a0f-4358-b0b4-0a3b3e29f256",
+    "repoName": "tech_wzkf/comment_sys_src"
+  },
+  {
+    "repoId": "ea684e09-d7ff-4c1a-905d-76146c57d1f4",
+    "repoName": "tech_growth/rpa_dispatch_src"
+  },
+  {
+    "repoId": "48c4559b-f7d7-4967-8d27-ebd2660e3f30",
+    "repoName": "tech_wzkf/growth_gateway_src"
+  },
+  {
+    "repoId": "ef9b0acd-45fb-4738-b894-b5bb3778a28e",
+    "repoName": "tech_mobile/caidao_android_src"
+  },
+  {
+    "repoId": "e2f1077f-e3f4-40fa-b422-ae115b88d9bf",
+    "repoName": "tech_wzkf/hexun-mobile-data_src"
+  },
+  {
+    "repoId": "3af83e57-eb71-402e-8c14-9898eee8358e",
+    "repoName": "tech_mobile/news_ios_src"
+  },
+  {
+    "repoId": "0084571f-6161-4bdb-8e05-4244cf77c55c",
+    "repoName": "tech_wzkf/job_executor_src"
+  },
+  {
+    "repoId": "dc8e9993-4431-4716-835b-628e936cb03d",
+    "repoName": "tech_ywkf/risk-manager"
+  },
+  {
+    "repoId": "27365683-f28e-480e-88b1-7056386bdf1f",
+    "repoName": "tech_wzkf/smart_writer_service_src"
+  },
+  {
+    "repoId": "cf01c5bb-29ef-4f7c-a852-f3bc24cb6a89",
+    "repoName": "tech_wzkf/cj123_pc_src"
+  },
+  {
+    "repoId": "98c3d3ae-3c7b-4f45-bb40-2e13da703ae7",
+    "repoName": "tech_mobile/rpa_android_robot_src"
+  },
+  {
+    "repoId": "fda5084c-9204-4187-934b-a7ae11796e77",
+    "repoName": "tech_wzkf/wcms_src"
+  },
+  {
+    "repoId": "997ca6cd-750e-46a2-b04d-a8f9892acee0",
+    "repoName": "tech_wzkf/nft_business_service_src"
+  },
+  {
+    "repoId": "86a32bdd-ed04-44b2-aa15-4bbcdc8febee",
+    "repoName": "tech_wzkf/zzkf-sentinel-dashboard-src"
+  },
+  {
+    "repoId": "103f546d-5171-4933-a57e-3c4cc4be4a59",
+    "repoName": "tech_wzkf/nwapi-new"
+  },
+  {
+    "repoId": "ebf61ec7-a62e-4031-963e-b1eb1e98a8f8",
+    "repoName": "tech_wzkf/push_api_src"
+  },
+  {
+    "repoId": "79c133f4-7c12-43ea-996e-28c69652629a",
+    "repoName": "tech_wzkf/gpt_interface"
+  },
+  {
+    "repoId": "37eff24b-5103-4e9b-885f-540e623a9056",
+    "repoName": "tech_growth/ai_research_src"
+  },
+  {
+    "repoId": "94457a32-fe5d-4e0d-a941-d9cbae3f5833",
+    "repoName": "tech_wzkf/rpa_src"
+  },
+  {
+    "repoId": "6b76b0db-4b6e-484c-92d9-21e7cc1c0d32",
+    "repoName": "tech_wzkf/msite_new_projects"
+  },
+  {
+    "repoId": "5f12971f-c92f-4ff7-842e-3e239f33e52b",
+    "repoName": "tech_wzkf/flash-news-src"
+  },
+  {
+    "repoId": "57e7083c-c410-4556-94ef-97587afcde3a",
+    "repoName": "tech_wzkf/getdata"
+  },
+  {
+    "repoId": "58207c92-1dca-41c2-99c1-e118c5e7f3e5",
+    "repoName": "tech_wzkf/dev_tools_set"
+  },
+  {
+    "repoId": "ebe73922-a35b-4f00-b794-c6b6b0a6aada",
+    "repoName": "tech_wzkf/push_job_src"
+  },
+  {
+    "repoId": "4e9a8ab5-b39a-4f08-8da7-df55237c758c",
+    "repoName": "tech_ywkf/speech-api"
+  },
+  {
+    "repoId": "bbe396a2-8123-4927-9fde-814b400f3fd4",
+    "repoName": "tech_wzkf/smart_writer_ui_src"
+  },
+  {
+    "repoId": "9c77dcfb-675d-4c05-91fc-7d2a108d0220",
+    "repoName": "tech_wzkf/es_proxy_src"
+  },
+  {
+    "repoId": "1e201609-d2c5-4df2-9030-c96bed38856b",
+    "repoName": "tech_wzkf/applet_bank_src"
+  },
+  {
+    "repoId": "e5acc9c4-680e-4bd2-9061-6cd29e31a6d1",
+    "repoName": "tech_wzkf/job_executor_m_src"
+  },
+  {
+    "repoId": "8eca1551-39b7-4f4d-9b59-3400586bc94a",
+    "repoName": "tech_wzkf/wxapp_adcrm_src"
+  },
+  {
+    "repoId": "60aa9bab-48e2-40f4-ab65-35a54e0cd79e",
+    "repoName": "tech_wzkf/hexun-wcms"
+  },
+  {
+    "repoId": "2987b94a-a098-48ed-b862-ce254f5e0bbc",
+    "repoName": "tech_wzkf/common_server_framework"
+  },
+  {
+    "repoId": "1ade0967-3edb-4513-b6fd-c5cf8f39579a",
+    "repoName": "tech_wzkf/hexun_wcms_ui_src"
+  },
+  {
+    "repoId": "719ddfe4-544b-4d2f-b208-95baaa22e4a7",
+    "repoName": "tech_wzkf/app_push_um"
+  },
+  {
+    "repoId": "416f8d1d-68f3-42e5-8604-f3fe584de859",
+    "repoName": "tech_wzkf/project_src"
+  },
+  {
+    "repoId": "d86acf6f-de26-442d-8818-49e4adbcd775",
+    "repoName": "tech_growth/common_src"
+  },
+  {
+    "repoId": "333a0968-2f34-446d-85d0-02299f44886d",
+    "repoName": "tech_wzkf/app-data-service-src"
+  },
+  {
+    "repoId": "7b5c5716-8123-4e6c-ab4b-dbbbdbdffc96",
+    "repoName": "tech_wzkf/msite_dataforex_src"
+  },
+  {
+    "repoId": "8d3db75a-8437-47a1-b1b9-8501402d85e9",
+    "repoName": "tech_growth/low_code_platform_src"
+  },
+  {
+    "repoId": "a3964b62-7c21-49b3-9c2e-d0ec3898028d",
+    "repoName": "tech_wzkf/caidao_service"
+  },
+  {
+    "repoId": "11af65e1-6de7-4ac0-870c-84b9d0c5f71a",
+    "repoName": "tech_wzkf/pdf_generate_service_src"
+  },
+  {
+    "repoId": "893cdb41-6a1b-4610-b232-4714628fd88e",
+    "repoName": "tech_wzkf/personalized-push"
+  },
+  {
+    "repoId": "935be946-2f5f-4270-a1b4-9f09f814105b",
+    "repoName": "tech_mobile/news_harmony_src"
+  },
+  {
+    "repoId": "2f2fec87-3993-4801-969a-eda22229ad15",
+    "repoName": "tech_wzkf/app_server"
+  },
+  {
+    "repoId": "30daaa57-4180-445f-8266-3142353f7abd",
+    "repoName": "tech_wzkf/stock_data_src"
+  },
+  {
+    "repoId": "43f35915-ee34-46dd-8eba-84ed7e6ce322",
+    "repoName": "tech_wzkf/dongfeng_ad_src"
+  },
+  {
+    "repoId": "0daca7fc-7fd2-4e4c-96dd-ada08167ed5c",
+    "repoName": "tech_growth/scaffold_src"
+  },
+  {
+    "repoId": "b0797834-bad0-405d-ace4-fe9eea500f94",
+    "repoName": "tech_wzkf/vehicle_src"
+  },
+  {
+    "repoId": "34a3bb7e-57e9-4fce-8828-9fc558a92084",
+    "repoName": "tech_wzkf/knowledge_extension_src"
+  },
+  {
+    "repoId": "255ac501-035f-48b5-9aab-6fa5486fcca4",
+    "repoName": "tech_wzkf/futures_h5_src"
+  },
+  {
+    "repoId": "c8c7545c-e4e8-446b-ab49-522c269cb7e5",
+    "repoName": "tech_wzkf/wallet_h5_src"
+  },
+  {
+    "repoId": "220c0e79-d0fc-42ae-89ab-d0108d226424",
+    "repoName": "tech_wzkf/xxl_job_executor"
+  },
+  {
+    "repoId": "c44cb48b-021a-40fa-9cf5-1073fb7f6817",
+    "repoName": "tech_wzkf/ds_src"
+  },
+  {
+    "repoId": "2cf29645-d82a-4d33-9af0-1d6b91cbf8e9",
+    "repoName": "tech_wzkf/carapp_src"
+  },
+  {
+    "repoId": "1bb66e38-6caf-4e98-9320-f801c321bf95",
+    "repoName": "tech_wzkf/page_editor_src"
+  },
+  {
+    "repoId": "32938b79-0429-4737-a1e2-0d049cb0036d",
+    "repoName": "tech_wzkf/runscript_extension_src"
+  },
+  {
+    "repoId": "e8ceb66b-6e74-46f5-a536-8631f958339e",
+    "repoName": "tech_wzkf/carapp_huawei_src"
+  },
+  {
+    "repoId": "a27ae16e-2aac-47fc-bd50-f0b24a121d16",
+    "repoName": "tech_mobile/caidao_pro_harmony_src"
+  },
+  {
+    "repoId": "985b6848-48e0-4bd1-8d28-531d8c925a6c",
+    "repoName": "tech_mobile/ios-src"
+  },
+  {
+    "repoId": "5c0fde7e-7340-4ec3-8ab1-9733bd3d35fe",
+    "repoName": "tech_wzkf/carapp_ali_src"
+  },
+  {
+    "repoId": "3b0b6b41-1469-416a-ba64-3a89bdda129c",
+    "repoName": "tech_wzkf/futures_pc_src"
+  },
+  {
+    "repoId": "41ffce70-d4b4-4958-9adb-b3bca09fab14",
+    "repoName": "tech_mobile/harmony_libraries_src"
+  },
+  {
+    "repoId": "4cb89f75-c69f-4d8c-a9c8-8d152e097ea5",
+    "repoName": "tech_wzkf/carapp_baidu_src"
+  },
+  {
+    "repoId": "6c287e86-8c32-4fa9-8772-5f1e51bb2906",
+    "repoName": "tech_mobile/ios_github_fork/sync"
+  }
+]
