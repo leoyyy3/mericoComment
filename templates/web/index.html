@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merico 代码质量分析平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .actions {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .actions h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            background: #d4edda;
+            color: #155724;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Merico 代码质量分析平台</h1>
+            <p>智能化代码质量分析与可视化</p>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h2>重复函数分析</h2>
+                <p>检测代码库中的重复函数,帮助识别可重构的代码,提高代码复用率。</p>
+                <a href="/duplicate-functions" class="btn">查看报告</a>
+                <button class="btn btn-secondary" onclick="runAnalysis('duplicate')">立即分析</button>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h2>函数注释分析</h2>
+                <p>分析函数注释覆盖率,识别缺少文档的函数,提升代码可维护性。</p>
+                <a href="/uncommented-functions" class="btn">查看报告</a>
+                <button class="btn btn-secondary" onclick="runAnalysis('uncommented')">立即分析</button>
+            </div>
+        </div>
+
+        <div class="actions">
+            <h3>全局操作</h3>
+            <button class="btn" onclick="runAnalysis('all')" style="background: #28a745;">▶️ 运行完整分析</button>
+            <a href="/api/status" class="btn btn-secondary">📊 查看状态</a>
+            <span class="status">定时任务: 每天 {{ schedule_time }}</span>
+        </div>
+    </div>
+
+    <script>
+        async function runAnalysis(type) {
+            const messages = {
+                'duplicate': '重复函数分析',
+                'uncommented': '未注释函数分析',
+                'all': '完整分析'
+            };
+
+            if (!confirm(`确定要运行${messages[type]}吗?这可能需要几分钟时间。`)) {
+                return;
+            }
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '⏳ 分析中...';
+
+            try {
+                const response = await fetch(`/api/run-analysis/${type}`, { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`✅ ${messages[type]}完成!`);
+                    location.reload();
+                } else {
+                    alert('❌ 分析失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ 请求失败: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '立即分析';
+            }
+        }
+    </script>
+</body>
+
+</html>

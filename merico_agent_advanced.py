@@ -73,6 +73,8 @@ class MericoUncommentedFunctionsAgent:
             with open(self.repo_ids_file, 'r', encoding='utf-8') as f:
                 repo_ids = json.load(f)
             self.logger.info(f"成功加载 {len(repo_ids)} 个项目 ID")
+            # 截取前10个id
+            repo_ids = repo_ids[:10]
             return repo_ids
         except Exception as e:
             self.logger.error(f"加载项目 ID 文件失败: {e}")
@@ -377,32 +379,33 @@ class MericoUncommentedFunctionsAgent:
                 pretty=output_settings.get("pretty_print", True)
             )
 
-        anlyzeData = DataAnalyzer()
-        anlyzeData.export_html()
+        # 归类数据
+        self.logger.info("开始归类数据...")
+        classified = self.classify_data(self.all_results)
 
-        # # 归类数据
-        # self.logger.info("开始归类数据...")
-        # classified = self.classify_data(self.all_results)
+        # 保存归类数据
+        if output_settings.get("save_classified", True):
+            self.save_results(
+                classified,
+                f"classified_results_{timestamp}.json",
+                pretty=output_settings.get("pretty_print", True)
+            )
 
-        # # 保存归类数据
-        # if output_settings.get("save_classified", True):
-        #     self.save_results(
-        #         classified,
-        #         f"classified_results_{timestamp}.json",
-        #         pretty=output_settings.get("pretty_print", True)
-        #     )
+        # 使用归类后的数据创建分析器并生成 HTML 报告
+        analyzer = DataAnalyzer(data=classified)
+        analyzer.export_html()
 
-        # # 生成并保存报告
-        # report = self.generate_report(classified)
-        # report_path = self.output_dir / f"report_{timestamp}.txt"
-        # with open(report_path, 'w', encoding='utf-8') as f:
-        #     f.write(report)
-        # self.logger.info(f"报告已保存到: {report_path}")
+        # 生成并保存文本报告
+        report = self.generate_report(classified)
+        report_path = self.output_dir / f"uncommment_report.txt"
+        with open(report_path, 'w', encoding='utf-8') as f:
+            f.write(report)
+        self.logger.info(f"报告已保存到: {report_path}")
 
-        # # 打印报告
-        # print("\n" + report)
+        # 打印报告
+        print("\n" + report)
 
-        # return classified
+        return classified
 
 
 def load_config(config_file: str = "config.json") -> Dict[str, Any]:
