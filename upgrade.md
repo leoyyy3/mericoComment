@@ -1,172 +1,188 @@
-analyze_data.py 主要优化方向
+架构优化建议
 
-  1. 模板分离 ⭐⭐⭐（高优先级）
+  1. 项目结构重组
 
-  问题：第344-669行有大量HTML硬编码在Python代码中，难以维护和修改。
+  当前问题: 代码文件平铺在根目录，缺乏标准的 Python 包结构
 
-  改进方案：
-  - 使用 Jinja2 模板引擎或将HTML分离到独立文件
-  - 或使用 Python 的字符串模板类
+  建议优化:
+  mericoComment/
+  ├── src/
+  │   ├── __init__.py
+  │   ├── core/                    # 核心业务逻辑
+  │   │   ├── agents/              # 智能体模块
+  │   │   ├── analyzers/           # 分析器模块
+  │   │   └── fetchers/            # 数据获取模块
+  │   ├── api/                     # API 统一入口
+  │   │   ├── routes/
+  │   │   └── middleware/
+  │   ├── services/                # 业务服务层
+  │   └── utils/                   # 公共工具
+  ├── config/                      # 配置目录
+  ├── tests/                       # 统一测试目录
+  └── scripts/                     # 运行脚本
 
-  2. 消除魔法数字 ⭐⭐⭐（高优先级）
+  ---
+  2. 合并重复的 Web 服务
 
-  问题：代码中有大量硬编码数字（20, 40, 80等）。
+  当前问题: 存在两个独立的 Web 服务 (web_service.py 和
+  weekly/api_service.py)，各自运行在不同端口
 
-  改进方案：
-  class Config:
-      """配置常量"""
-      TOP_N_ITEMS = 20
-      TOP_PROJECTS_BEST = 10
-      BAR_CHART_WIDTH = 40
-      SECTION_WIDTH = 80
-      TOP_RANKING_THRESHOLD = 3
-      MEDIUM_RANKING_THRESHOLD = 10
+  建议: 合并为统一的 API Gateway，使用 Flask Blueprint 组织路由：
 
-  3. 添加类型注解 ⭐⭐（中优先级）
+  # api/__init__.py
+  from flask import Flask
+  from .routes import weekly_bp, analysis_bp, health_bp
 
-  问题：缺少类型提示，降低代码可读性和IDE支持。
+  def create_app():
+      app = Flask(__name__)
+      app.register_blueprint(weekly_bp, url_prefix='/api/weekly')
+      app.register_blueprint(analysis_bp, url_prefix='/api/analysis')
+      app.register_blueprint(health_bp, url_prefix='/api')
+      return app
 
-  改进方案：
-  from typing import Dict, List, Any, Optional
+  ---
+  3. 抽象公共层
 
-  def load_data(self) -> Dict[str, Any]:
-      """加载数据"""
+  当前问题: 多个模块存在重复代码，如 HTTP 请求、重试逻辑、日志配置
 
-  def analyze_severity_distribution(self) -> None:
-      """分析严重程度分布"""
+  建议抽取:
 
-  4. 重构超长方法 ⭐⭐⭐（高优先级）
+  | 公共组件              | 用途                      |
+  |-------------------|-------------------------|
+  | HttpClient        | 统一的 HTTP 请求封装，含重试、超时、认证 |
+  | RetryDecorator    | 可复用的重试装饰器               |
+  | LoggerFactory     | 统一日志配置                  |
+  | ConfigLoader      | 集中配置管理                  |
+  | ResponseFormatter | 统一 API 响应格式             |
 
-  问题：export_html 方法长达340行，职责过重。
+  ---
+  4. 配置管理优化
 
-  改进方案：拆分为多个小方法：
-  def export_html(self, output_file: str = "..."):
-      html_content = self._generate_html_structure()
-      self._write_html_file(output_file, html_content)
+  当前问题:
+  - 敏感信息(API Key、Token)存放在 config.json
+  - 缺乏环境区分（dev/prod）
 
-  def _generate_html_structure(self) -> str:
-      return f"""
-      {self._get_html_header()}
-      {self._get_html_body()}
-      {self._get_html_footer()}
-      """
+  建议:
+  # 使用环境变量 + 配置文件分层
+  config/
+  ├── default.py       # 默认配置
+  ├── development.py   # 开发环境
+  ├── production.py    # 生产环境
+  └── __init__.py      # 根据 ENV 自动加载
 
-  def _get_html_header(self) -> str:
-      """生成HTML头部"""
+  # 敏感信息通过环境变量注入
+  ZHIPU_API_KEY=xxx
+  TAPD_SESSION=xxx
 
-  def _get_html_body(self) -> str:
-      """生成HTML主体"""
+  ---
+  5. 引入异步处理
 
-  5. 改进数据缓存 ⭐⭐（中优先级）
+  当前问题: merico_agent_advanced.py 批量请求数百个项目时是同步串行的，效率低
 
-  问题：多处重复计算项目统计数据（第170-174行，第338-342行）。
+  建议: 使用 asyncio + aiohttp 实现并发请求：
 
-  改进方案：
+  async def fetch_all_projects(repo_ids: List[str]) -> List[dict]:
+      async with aiohttp.ClientSession() as session:
+          tasks = [fetch_project(session, rid) for rid in repo_ids]
+          return await asyncio.gather(*tasks, return_exceptions=True)
+
+  预期效果: 数百个项目的请求时间可从分钟级降到秒级
+
+  ---
+  6. 添加缓存层
+
+  当前问题: 每次请求都直接调用外部 API，无数据缓存
+
+  建议:
+  - 引入 Redis 缓存高频数据
+  - 对于不常变化的数据（如项目列表）设置 TTL 缓存
+  - 周报数据可缓存到本地文件系统
+
   from functools import lru_cache
 
-  @property
-  @lru_cache(maxsize=1)
-  def project_function_count(self) -> Counter:
-      """缓存项目函数统计"""
-      counter = Counter()
-      for func in self.data.get("all_uncommented_functions", []):
-          if repo_id := func.get("repo_id"):
-              counter[repo_id] += 1
-      return counter
+  @lru_cache(maxsize=100, ttl=3600)
+  def get_project_info(repo_id: str) -> dict:
+      ...
 
-  6. 输出与逻辑分离 ⭐⭐（中优先级）
+  ---
+  7. 完善错误处理机制
 
-  问题：分析方法直接打印，难以测试和复用。
+  当前问题: 错误处理分散，缺乏统一的异常体系
 
-  改进方案：
-  def analyze_severity_distribution(self) -> Dict[str, Any]:
-      """返回分析结果而不是打印"""
-      by_severity = self.data.get("by_severity", {})
-      total = sum(by_severity.values())
+  建议:
+  # exceptions.py
+  class MericoBaseException(Exception):
+      """基础异常类"""
 
-      return {
-          'by_severity': by_severity,
-          'total': total,
-          'sorted_items': sorted(by_severity.items(), ...)
-      }
+  class APIRequestError(MericoBaseException):
+      """API 请求异常"""
 
-  def print_severity_distribution(self):
-      """专门负责打印"""
-      result = self.analyze_severity_distribution()
-      # 打印逻辑
+  class ConfigurationError(MericoBaseException):
+      """配置异常"""
 
-  7. 改进颜色管理 ⭐（低优先级）
+  class DataProcessingError(MericoBaseException):
+      """数据处理异常"""
 
-  问题：Colors类使用可变类属性，不够优雅。
+  # 全局异常处理器
+  @app.errorhandler(MericoBaseException)
+  def handle_merico_error(error):
+      return jsonify({"error": str(error), "code": error.code}), error.status
 
-  改进方案：
-  from dataclasses import dataclass
+  ---
+  8. 测试体系建设
 
-  @dataclass
-  class ColorScheme:
-      """颜色方案"""
-      header: str = '\033[95m'
-      blue: str = '\033[94m'
-      # ... 其他颜色
+  当前问题: 测试文件分散，缺乏单元测试
 
-      @classmethod
-      def no_color(cls) -> 'ColorScheme':
-          """返回无颜色方案"""
-          return cls(header='', blue='', ...)
+  建议:
+  tests/
+  ├── unit/                # 单元测试
+  │   ├── test_agents.py
+  │   ├── test_analyzers.py
+  │   └── test_utils.py
+  ├── integration/         # 集成测试
+  │   └── test_api.py
+  ├── fixtures/            # 测试数据
+  └── conftest.py          # pytest 配置
 
-  # 使用
-  colors = ColorScheme() if not args.no_color else ColorScheme.no_color()
+  引入 pytest + pytest-cov 进行测试覆盖率统计
 
-  8. 错误处理细化 ⭐⭐（中优先级）
+  ---
+  9. 依赖注入改造
 
-  问题：第57行使用泛化的 except Exception。
+  当前问题: 类之间直接实例化依赖，耦合度高
 
-  改进方案：
-  def load_data(self) -> Dict[str, Any]:
-      try:
-          with open(self.classified_file, 'r', encoding='utf-8') as f:
-              return json.load(f)
-      except FileNotFoundError:
-          print(f"错误: 文件不存在 {self.classified_file}")
-          sys.exit(1)
-      except json.JSONDecodeError as e:
-          print(f"错误: JSON格式无效 - {e}")
-          sys.exit(1)
-      except PermissionError:
-          print(f"错误: 没有读取权限")
-          sys.exit(1)
+  建议: 使用依赖注入提升可测试性：
 
-  9. 使用现代Python特性 ⭐（低优先级）
+  # 当前方式
+  class WeeklyReportGenerator:
+      def __init__(self, config):
+          self.ai_client = ZhipuAI(config['api_key'])  # 直接耦合
 
-  改进：
-  - 使用海象运算符（已在某些地方使用）
-  - 使用 pathlib 替代字符串路径操作
-  - 使用 f-string 统一字符串格式化
+  # 优化后
+  class WeeklyReportGenerator:
+      def __init__(self, ai_client: AIClientInterface):  # 依赖抽象
+          self.ai_client = ai_client
 
-  10. 配置文件支持 ⭐（低优先级）
+  ---
+  10. API 版本管理
 
-  改进：添加配置文件支持，允许自定义颜色、阈值等：
-  # config.yaml
-  display:
-    top_n: 20
-    bar_width: 40
-  colors:
-    enabled: true
-  export:
-    csv_encoding: utf-8-sig
+  当前问题: API 无版本控制，升级困难
 
-  建议的优化优先级
+  建议:
+  /api/v1/weekly-report/generate
+  /api/v1/analysis/uncommented
+  /api/v2/...  # 未来版本
 
-  第一阶段（快速改进）：
-  1. 消除魔法数字，添加配置类
-  <!-- 2. 添加类型注解 -->
-  3. 细化错误处理
+  ---
+  优先级排序
 
-  第二阶段（结构优化）：
-  4. 拆分 export_html 方法
-  5. 添加数据缓存
-  6. 分离输出与逻辑
-
-  第三阶段（架构改进）：
-  7. HTML模板分离
-  8. 改进颜色管理
+  | 优先级 | 优化项       | 收益      |
+  |-----|-----------|---------|
+  | P0  | 合并 Web 服务 | 降低运维复杂度 |
+  | P0  | 配置管理优化    | 提升安全性   |
+  | P1  | 异步请求改造    | 大幅提升性能  |
+  | P1  | 抽象公共层     | 减少重复代码  |
+  | P2  | 项目结构重组    | 提升可维护性  |
+  | P2  | 错误处理机制    | 增强健壮性   |
+  | P3  | 缓存层       | 降低外部依赖  |
+  | P3  | 测试体系      | 保障代码质量  |

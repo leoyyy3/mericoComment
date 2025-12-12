@@ -1,0 +1,23 @@
+{
+  "zhipu_ai": {
+    "api_key": "your-zhipu-api-key-here",
+    "model": "glm-4.5-flash"
+  },
+  "tapd": {
+    "base_url": "https://www.tapd.cn/api/devops/source_code",
+    "cookies": {
+      "tapdsession": "your-tapdsession-cookie-here",
+      "t_u": "your-t-u-cookie-here",
+      "dsc-token": "your-dsc-token-here",
+      "_qddaz": "your-qddaz-cookie-here",
+      "__root_domain_v": ".tapd.cn",
+      "_t_uid": "your-t-uid-here",
+      "_t_crop": "your-t-crop-here",
+      "tapd_div": "100_0",
+      "locale": "zh_CN",
+      "cloud_current_workspaceId": "your-workspace-id-here",
+      "_wt": "your-wt-cookie-here",
+      "t_i_token": "your-t-i-token-here"
+    }
+  }
+}
