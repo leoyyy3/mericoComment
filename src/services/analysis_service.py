@@ -33,9 +33,12 @@ class AnalysisService:
         self._output_dir = Path(settings.output.output_dir if settings else 'output')
         self._output_dir.mkdir(exist_ok=True)
 
-    def run_uncommented_analysis(self) -> Dict[str, Any]:
+    def run_uncommented_analysis(self, token: str = None) -> Dict[str, Any]:
         """
         运行未注释函数分析
+
+        Args:
+            token: 可选的 API Token，如果提供则覆盖配置中的 token
 
         Returns:
             分析结果
@@ -44,7 +47,7 @@ class AnalysisService:
 
         try:
             # 使用新架构的智能体
-            with UncommentedFunctionsAgent(settings=self.settings) as agent:
+            with UncommentedFunctionsAgent(settings=self.settings, token=token) as agent:
                 result = agent.run()
 
             # 获取生成的报告文件
@@ -64,9 +67,12 @@ class AnalysisService:
             logger.error(f"未注释函数分析失败: {e}", exc_info=True)
             raise
 
-    def run_duplicate_analysis(self) -> Dict[str, Any]:
+    def run_duplicate_analysis(self, token: str = None) -> Dict[str, Any]:
         """
         运行重复函数分析
+
+        Args:
+            token: 可选的 API Token，如果提供则覆盖配置中的 token
 
         Returns:
             分析结果
@@ -75,7 +81,7 @@ class AnalysisService:
 
         try:
             # 使用新架构的获取器
-            with DuplicateFunctionsFetcher(settings=self.settings) as fetcher:
+            with DuplicateFunctionsFetcher(settings=self.settings, token=token) as fetcher:
                 result = fetcher.run()
 
             # 获取最新报告
@@ -97,9 +103,12 @@ class AnalysisService:
             logger.error(f"重复函数分析失败: {e}", exc_info=True)
             raise
 
-    def run_all(self) -> Dict[str, Any]:
+    def run_all(self, token: str = None) -> Dict[str, Any]:
         """
         运行所有分析
+
+        Args:
+            token: 可选的 API Token，如果提供则覆盖配置中的 token
 
         Returns:
             分析结果
@@ -114,7 +123,7 @@ class AnalysisService:
 
         # 运行未注释函数分析
         try:
-            results['uncommented'] = self.run_uncommented_analysis()
+            results['uncommented'] = self.run_uncommented_analysis(token=token)
         except Exception as e:
             results['uncommented'] = {
                 'status': 'failed',
@@ -123,7 +132,7 @@ class AnalysisService:
 
         # 运行重复函数分析
         try:
-            results['duplicate'] = self.run_duplicate_analysis()
+            results['duplicate'] = self.run_duplicate_analysis(token=token)
         except Exception as e:
             results['duplicate'] = {
                 'status': 'failed',

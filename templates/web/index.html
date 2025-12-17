@@ -1,199 +1,157 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merico 代码质量分析平台</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">代码质量分析概览</h1>
+    <p class="page-subtitle">智能化代码质量分析与可视化平台</p>
+</div>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            padding: 60px 20px;
-        }
-
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-icon {
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
-
-        .feature-card h2 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .feature-card p {
-            color: #666;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-            margin-right: 10px;
-        }
-
-        .btn:hover {
-            background: #5568d3;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
-        .actions {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            margin-top: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-
-        .actions h3 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            background: #d4edda;
-            color: #155724;
-            margin-left: 15px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🔍 Merico 代码质量分析平台</h1>
-            <p>智能化代码质量分析与可视化</p>
-        </div>
-
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">🔄</div>
-                <h2>重复函数分析</h2>
-                <p>检测代码库中的重复函数,帮助识别可重构的代码,提高代码复用率。</p>
-                <a href="/duplicate-functions" class="btn">查看报告</a>
-                <button class="btn btn-secondary" onclick="runAnalysis('duplicate')">立即分析</button>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">📝</div>
-                <h2>函数注释分析</h2>
-                <p>分析函数注释覆盖率,识别缺少文档的函数,提升代码可维护性。</p>
-                <a href="/uncommented-functions" class="btn">查看报告</a>
-                <button class="btn btn-secondary" onclick="runAnalysis('uncommented')">立即分析</button>
-            </div>
-        </div>
-
-        <div class="actions">
-            <h3>全局操作</h3>
-            <button class="btn" onclick="runAnalysis('all')" style="background: #28a745;">▶️ 运行完整分析</button>
-            <a href="/api/status" class="btn btn-secondary">📊 查看状态</a>
-            <span class="status">定时任务: 每天 {{ schedule_time }}</span>
+<div class="feature-grid">
+    <!-- Duplicate Analysis Card -->
+    <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h2 class="feature-title">重复函数分析</h2>
+        <p class="feature-desc">检测代码库中的重复函数（Copy-Paste），识别可重构的逻辑，提升代码复用率和可维护性。</p>
+        <div class="card-actions">
+            <a href="/duplicate-functions" class="btn btn-secondary">查看报告</a>
+            <button class="btn btn-primary" onclick="runAnalysis('duplicate')">立即分析</button>
         </div>
     </div>
 
-    <script>
-        async function runAnalysis(type) {
-            const messages = {
-                'duplicate': '重复函数分析',
-                'uncommented': '未注释函数分析',
-                'all': '完整分析'
-            };
+    <!-- Commentary Analysis Card -->
+    <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <h2 class="feature-title">函数注释分析</h2>
+        <p class="feature-desc">扫描核心代码，分析函数注释覆盖率，自动识别缺失文档的关键函数，辅助生成文档补全计划。</p>
+        <div class="card-actions">
+            <a href="/uncommented-functions" class="btn btn-secondary">查看报告</a>
+            <button class="btn btn-primary" onclick="runAnalysis('uncommented')">立即分析</button>
+        </div>
+    </div>
 
-            if (!confirm(`确定要运行${messages[type]}吗?这可能需要几分钟时间。`)) {
-                return;
-            }
+    <!-- Full Analysis Card -->
+    <div class="feature-card" style="background: linear-gradient(135deg, #fff 0%, #f0f4ff 100%);">
+        <div class="feature-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">🚀</div>
+        <h2 class="feature-title">完整全量分析</h2>
+        <p class="feature-desc">运行所有启用的分析器，生成包含重复代码和注释质量的综合健康度报告。</p>
+        <div class="card-actions">
+            <button class="btn btn-success" onclick="runAnalysis('all')" style="width: 100%">
+                ▶️ 运行完整分析
+            </button>
+        </div>
+    </div>
+</div>
 
-            const btn = event.target;
-            btn.disabled = true;
-            btn.textContent = '⏳ 分析中...';
+<!-- Token Configuration Panel -->
+<div class="glass-panel" style="padding: 30px; margin-top: 40px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 1.25rem; color: var(--text-main);">🔑 Token 配置</h3>
+        <span class="status-badge" style="font-size: 0.9rem; color: var(--text-secondary);">
+            ⏰ 定时任务: 每天 {{ schedule_time }}
+        </span>
+    </div>
 
-            try {
-                const response = await fetch(`/api/run-analysis/${type}`, { method: 'POST' });
-                const data = await response.json();
+    <div class="input-group">
+        <input type="password" id="tokenInput" class="form-control" placeholder="请输入 Merico API Token (e.g., eye...)"
+            autocomplete="off">
+        <button class="btn btn-primary" onclick="saveToken()">保存</button>
+        <button class="btn btn-secondary" onclick="clearToken()">清除</button>
+    </div>
+    <div id="tokenStatus" class="mt-2" style="font-size: 0.9rem; margin-left: 5px;"></div>
+</div>
 
-                if (data.success) {
-                    alert(`✅ ${messages[type]}完成!`);
-                    location.reload();
-                } else {
-                    alert('❌ 分析失败: ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ 请求失败: ' + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = '立即分析';
-            }
+<script>
+    const TOKEN_KEY = 'merico_api_token';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadToken();
+        updateTokenStatus();
+
+        // Highlight active nav
+        document.querySelector('a[href="/"]').classList.add('active');
+    });
+
+    function getToken() {
+        return localStorage.getItem(TOKEN_KEY) || '';
+    }
+
+    function loadToken() {
+        const token = getToken();
+        document.getElementById('tokenInput').value = token;
+    }
+
+    function saveToken() {
+        const token = document.getElementById('tokenInput').value.trim();
+        if (!token) {
+            alert('请输入有效的 Token');
+            return;
         }
-    </script>
-</body>
+        localStorage.setItem(TOKEN_KEY, token);
+        updateTokenStatus();
+        alert('Token 已保存');
+    }
 
-</html>
+    function clearToken() {
+        if (confirm('确定要清除保存的 Token 吗?')) {
+            localStorage.removeItem(TOKEN_KEY);
+            document.getElementById('tokenInput').value = '';
+            updateTokenStatus();
+        }
+    }
+
+    function updateTokenStatus() {
+        const token = getToken();
+        const statusEl = document.getElementById('tokenStatus');
+        if (token) {
+            const maskedToken = token.substring(0, 10) + '...' + token.substring(token.length - 6);
+            statusEl.innerHTML = `<span class="badge badge-success">✓ 已保存 Token: ${maskedToken}</span>`;
+        } else {
+            statusEl.innerHTML = `<span class="badge badge-warning">⚠️ 未配置 Token，将使用服务器默认配置</span>`;
+        }
+    }
+
+    async function runAnalysis(type) {
+        const messages = {
+            'duplicate': '重复函数分析',
+            'uncommented': '未注释函数分析',
+            'all': '完整分析'
+        };
+
+        const token = getToken();
+        if (!token && !confirm('未配置 Token，将使用服务器默认配置。是否继续?')) {
+            return;
+        }
+
+        if (!confirm(`确定要运行${messages[type]}吗? 这可能需要几分钟时间。`)) {
+            return;
+        }
+
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = '⏳ 分析中...';
+
+        try {
+            const requestBody = token ? { token: token } : {};
+            const response = await fetch(`/api/analysis/${type}/run`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                alert(`✅ ${messages[type]}完成!`);
+                location.reload();
+            } else {
+                alert('❌ 分析失败: ' + data.error);
+            }
+        } catch (error) {
+            alert('❌ 请求失败: ' + error.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    }
+</script>
+{% endblock %}

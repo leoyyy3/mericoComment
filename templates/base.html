@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Merico 代码质量分析平台{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span>🔍</span> Merico Analysis
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">概览</a>
+                <a href="/duplicate-functions" class="nav-link">重复函数</a>
+                <a href="/uncommented-functions" class="nav-link">未注释函数</a>
+                <a href="/api/status" class="nav-link">API 状态</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container animate-fade-in">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 40px; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+        <p>© 2025 Merico Code Quality Analysis System</p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

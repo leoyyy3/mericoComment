@@ -17,13 +17,14 @@ from src.utils import HttpClient, HttpClientConfig, LoggerFactory, retry
 class UncommentedFunctionsAgent:
     """Merico 项目未注释函数数据采集与分析智能体"""
 
-    def __init__(self, settings=None, config: Dict[str, Any] = None):
+    def __init__(self, settings=None, config: Dict[str, Any] = None, token: str = None):
         """
         初始化智能体
 
         Args:
             settings: Settings 配置对象（新架构）
             config: 配置字典（兼容旧架构）
+            token: 可选的 API Token，如果提供则覆盖配置中的 token
         """
         self.settings = settings
         self.config = config or {}
@@ -31,7 +32,7 @@ class UncommentedFunctionsAgent:
 
         # 从 settings 或 config 获取配置
         if settings:
-            self.token = settings.merico.token
+            self.token = token if token else settings.merico.token
             self.api_url = settings.merico.api_url
             self.repo_ids_file = settings.merico.repo_ids_file
             self.output_dir = settings.output.output_dir
@@ -46,7 +47,7 @@ class UncommentedFunctionsAgent:
                 'pretty_print': settings.output.pretty_print
             }
         else:
-            self.token = config.get("token", "")
+            self.token = token if token else config.get("token", "")
             self.api_url = config.get("api_url", "")
             self.repo_ids_file = config.get("repo_ids_file", "repoIds_simple.json")
             self.output_dir = Path(config.get("output_settings", {}).get("output_dir", "output"))

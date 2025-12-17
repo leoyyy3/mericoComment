@@ -22,6 +22,11 @@ def run_uncommented_analysis():
 
     POST /api/analysis/uncommented/run
 
+    请求体 (可选):
+    {
+        "token": "Bearer Token (可选，不传则使用配置文件中的 token)"
+    }
+
     响应:
     {
         "success": true,
@@ -36,10 +41,15 @@ def run_uncommented_analysis():
 
         settings = current_app.config.get('SETTINGS')
 
+        # 从请求中获取 token
+        token = None
+        if request.is_json and request.json:
+            token = request.json.get('token')
+
         # 动态导入避免循环依赖
         from src.services import AnalysisService
         service = AnalysisService(settings)
-        result = service.run_uncommented_analysis()
+        result = service.run_uncommented_analysis(token=token)
 
         logger.info("未注释函数分析完成")
 
@@ -63,15 +73,25 @@ def run_duplicate_analysis():
     运行重复函数分析
 
     POST /api/analysis/duplicate/run
+
+    请求体 (可选):
+    {
+        "token": "Bearer Token (可选，不传则使用配置文件中的 token)"
+    }
     """
     try:
         logger.info("开始执行重复函数分析...")
 
         settings = current_app.config.get('SETTINGS')
 
+        # 从请求中获取 token
+        token = None
+        if request.is_json and request.json:
+            token = request.json.get('token')
+
         from src.services import AnalysisService
         service = AnalysisService(settings)
-        result = service.run_duplicate_analysis()
+        result = service.run_duplicate_analysis(token=token)
 
         logger.info("重复函数分析完成")
 
@@ -91,15 +111,25 @@ def run_all_analysis():
     运行所有分析
 
     POST /api/analysis/all/run
+
+    请求体 (可选):
+    {
+        "token": "Bearer Token (可选，不传则使用配置文件中的 token)"
+    }
     """
     try:
         logger.info("开始执行完整分析...")
 
         settings = current_app.config.get('SETTINGS')
 
+        # 从请求中获取 token
+        token = None
+        if request.is_json and request.json:
+            token = request.json.get('token')
+
         from src.services import AnalysisService
         service = AnalysisService(settings)
-        result = service.run_all()
+        result = service.run_all(token=token)
 
         logger.info("完整分析完成")
 

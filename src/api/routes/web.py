@@ -9,7 +9,7 @@ Description:
 Web 页面路由
 """
 
-from flask import Blueprint, render_template, current_app, send_from_directory
+from flask import Blueprint, render_template, current_app, send_from_directory, redirect
 from pathlib import Path
 from datetime import datetime
 from src.utils import LoggerFactory
@@ -35,6 +35,9 @@ def duplicate_functions_page():
     """重复函数分析页面"""
     reports = _get_reports('duplicate_functions_report_*.html', 'duplicate_functions_report_latest.html')
 
+    if reports:
+        return redirect(reports[0]['url'])
+
     return render_template(
         'web/report_list.html',
         title='重复函数分析报告',
@@ -47,6 +50,9 @@ def duplicate_functions_page():
 def uncommented_functions_page():
     """未注释函数分析页面"""
     reports = _get_reports('uncommented_functions_report*.html')
+
+    if reports:
+        return redirect(reports[0]['url'])
 
     return render_template(
         'web/report_list.html',
@@ -61,6 +67,11 @@ def serve_report(filename: str):
     """提供报告文件访问"""
     settings = current_app.config.get('SETTINGS')
     output_dir = settings.output.output_dir if settings else Path('output')
+
+    # send_from_directory 需要绝对路径或相对于 flask root_path 的路径
+    # 这里我们将其转换为绝对路径
+    if not output_dir.is_absolute():
+        output_dir = Path.cwd() / output_dir
 
     return send_from_directory(output_dir, filename)
 

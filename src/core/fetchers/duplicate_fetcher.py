@@ -17,21 +17,27 @@ from src.utils import HttpClient, HttpClientConfig, LoggerFactory
 class DuplicateFunctionsFetcher:
     """重复函数列表获取器"""
 
-    def __init__(self, settings=None, config_file: str = "config.json"):
+    def __init__(self, settings=None, config_file: str = "config.json", token: str = None):
         """
         初始化获取器
 
         Args:
             settings: Settings 配置对象（新架构）
             config_file: 配置文件路径（兼容旧架构）
+            token: 可选的 API Token，如果提供则覆盖配置中的 token
         """
         self.logger = LoggerFactory.get_logger(__name__)
         self.results = []
+        self._override_token = token
 
         if settings:
             self._init_from_settings(settings)
         else:
             self._init_from_config_file(config_file)
+
+        # 如果传入了 token 参数，则覆盖
+        if token:
+            self.token = token
 
         # 初始化 HTTP 客户端
         self.http_client = HttpClient(self.request_config)

@@ -45,7 +45,7 @@ def create_app(config_file: str = None) -> Flask:
     app = Flask(
         __name__,
         template_folder=str(project_root / 'templates'),
-        static_folder=str(project_root / 'output')
+        static_folder=str(project_root / 'static')
     )
 
     # 配置应用
