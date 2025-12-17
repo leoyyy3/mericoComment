@@ -268,6 +268,34 @@ class ZhipuAIClient:
         self.logger.info("Successfully generated weekly report")
         return report
 
+    def invoke(
+        self,
+        messages: List[Dict[str, Any]],
+        tools: Optional[List[Dict[str, Any]]] = None
+    ) -> Any:
+        """
+        调用 LLM
+        
+        Args:
+            messages: 消息列表
+            tools: 工具定义列表
+            
+        Returns:
+            API 响应
+        """
+        params = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": 0.7,
+            "top_p": 0.9,
+        }
+        
+        if tools:
+            params["tools"] = tools
+            params["tool_choice"] = "auto"
+            
+        return self.client.chat.completions.create(**params)
+
     def _build_default_prompt(self, commits_data: List[Dict[str, str]]) -> str:
         """构建默认的提示词"""
         # 按用户分组统计

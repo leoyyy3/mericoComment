@@ -69,7 +69,7 @@ def create_app(config_file: str = None) -> Flask:
 
 def _register_blueprints(app: Flask) -> None:
     """注册所有蓝图"""
-    from .routes import health_bp, analysis_bp, weekly_bp, web_bp
+    from .routes import health_bp, analysis_bp, weekly_bp, web_bp, chat_bp
 
     # 健康检查 API
     app.register_blueprint(health_bp, url_prefix='/api')
@@ -79,6 +79,9 @@ def _register_blueprints(app: Flask) -> None:
 
     # 周报 API
     app.register_blueprint(weekly_bp, url_prefix='/api/weekly-report')
+
+    # Chat API
+    app.register_blueprint(chat_bp, url_prefix='/api/chat')
 
     # Web 页面
     app.register_blueprint(web_bp)

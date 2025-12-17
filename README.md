@@ -1,81 +1,138 @@
-# Merico 代码质量分析系统
+# Merico 代码质量分析平台
 
-一款专业的代码质量分析平台，专注于**未注释函数检测**、**重复代码识别**和**AI智能周报生成**，助力团队提升代码可维护性与开发效率。
+一款集 **代码质量检测**、**可视化分析** 与 **AI 智能交互** 于一体的综合平台。
 
-## ✨ 核心功能
+通过 **Intelligent Agent** 架构，支持自然语言对话完成代码分析、周报生成和数据查询任务。
 
-- **未注释函数分析**
-  - 自动识别缺乏文档的函数
-  - 按严重程度分级（高危/高/中/低）
-  - 项目质量排名与可视化图表
+## 核心功能
 
-- **重复代码检测**
-  - 扫描跨仓库重复代码模式
-  - 语言分布与复杂度影响分析
-  - 交互式HTML报告展示
+### 代码质量分析
 
-- **AI智能周报**
-  - 基于TAPD提交记录生成报告
-  - 支持自定义提示词定制内容
-  - 自动导出HTML/Markdown格式
+| 功能 | 描述 |
+|------|------|
+| **未注释函数检测** | 识别缺乏文档的关键函数，按严重程度分级 |
+| **重复代码扫描** | 跨仓库检测重复逻辑 (Copy-Paste)，提供优化建议 |
+| **多维度图表** | 复杂度分布、类型排名、项目红黑榜等可视化 |
 
-- **Web可视化界面**
-  - 实时交互式仪表盘
-  - 一键生成分析报告
-  - 响应式移动端适配
+### AI 智能周报
 
-- **API优先架构**
-  - 完整RESTful接口支持
-  - 定时任务自动执行
-  - 全面错误处理机制
+- 基于 TAPD 提交记录自动生成结构化周报
+- ZhipuAI (GLM-4) 深度分析，提取技术亮点
+- 支持 Markdown 和 HTML 导出
 
-## 🗂 项目结构
+### 智能体助手
+
+- **自然语言交互**：通过对话完成分析任务
+- **意图识别**：自动识别分析请求、周报生成、状态查询
+- **工具调用**：自动调度底层分析服务
+
+### 前端 Token 配置
+
+- 支持在 Web 界面直接配置 API Token
+- Token 本地存储，刷新页面不丢失
+- 适用于 Token 每日更新的场景
+
+---
+
+## 系统架构
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Web 界面 (Flask + Jinja2)            │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │ Token 配置  │  │ 分析报告    │  │ AI 对话     │     │
+│  └─────────────┘  └─────────────┘  └─────────────┘     │
+└──────────────────────────┬──────────────────────────────┘
+                           │ REST API
+┌──────────────────────────▼──────────────────────────────┐
+│                    Flask 后端                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │ Analysis BP │  │ Weekly BP   │  │ Chat BP     │     │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘     │
+└─────────┼────────────────┼────────────────┼─────────────┘
+          │                │                │
+┌─────────▼────────────────▼────────────────▼─────────────┐
+│                    Services 层                          │
+│  AnalysisService    WeeklyService    AgentService      │
+└─────────┬────────────────┬────────────────┬─────────────┘
+          │                │                │
+┌─────────▼────────────────▼────────────────▼─────────────┐
+│                    Core 模块                            │
+│  Agents / Fetchers / Analyzers / Generators            │
+└─────────┬────────────────┬────────────────┬─────────────┘
+          │                │                │
+          ▼                ▼                ▼
+    Merico API         TAPD API        ZhipuAI API
+```
+
+---
+
+## 项目结构
 
 ```
 mericoComment/
-├── config/
-│   ├── __init__.py
-│   ├── loader.py       # 配置加载器
-│   └── settings.py     # 类型安全配置
 ├── src/
-│   ├── api/            # Flask API接口
-│   │   ├── routes/     # 路由处理模块
-│   │   └── app.py      # 应用工厂
-│   ├── core/
-│   │   ├── agents/     # 分析智能体
-│   │   ├── analyzers/  # 数据处理器
-│   │   ├── fetchers/   # 数据采集器
-│   │   └── generators/ # 报告生成器
-│   ├── services/       # 业务逻辑层
-│   ├── utils/
-│   │   ├── logger.py
-│   │   ├── response.py
-│   │   └── http_client.py
-│   └── __init__.py
-├── templates/
-│   ├── web/            # HTML模板
-│   └── report.html     # 报告模板
-├── output/             # 生成报告目录
-├── log/                # 系统日志目录
-├── assets/
-│   └── repoId_repoName_list.json
-├── run.py              # CLI入口文件
-├── repoIds_simple.json # 仓库ID列表
-└── requirements.txt    # 依赖库清单
+│   ├── api/                    # Flask API
+│   │   ├── app.py              # 应用工厂
+│   │   └── routes/             # 路由模块
+│   │       ├── analysis.py     # 分析 API
+│   │       ├── weekly.py       # 周报 API
+│   │       ├── chat.py         # 对话 API
+│   │       ├── web.py          # 页面路由
+│   │       └── health.py       # 健康检查
+│   ├── services/               # 业务服务层
+│   │   ├── analysis_service.py
+│   │   └── weekly_service.py
+│   ├── core/                   # 核心业务逻辑
+│   │   ├── agents/             # 数据采集智能体
+│   │   ├── fetchers/           # 数据获取器
+│   │   ├── analyzers/          # 数据分析器
+│   │   └── generators/         # 报告生成器
+│   ├── agent/                  # AI 智能体模块
+│   │   ├── service.py          # 对话状态管理
+│   │   ├── tools.py            # 工具注册表
+│   │   └── prompts.py          # 提示词工程
+│   └── utils/                  # 工具类
+│       ├── http_client.py      # HTTP 客户端
+│       ├── logger.py           # 日志工厂
+│       └── response.py         # 响应格式化
+├── config/                     # 配置管理
+│   ├── loader.py               # 配置加载器
+│   └── settings.py             # 配置定义
+├── templates/                  # Jinja2 模板
+│   ├── base.html               # 基础模板
+│   └── web/                    # 页面模板
+├── static/                     # 静态资源
+│   ├── css/
+│   └── js/
+├── output/                     # 输出目录
+├── config.json                 # 主配置文件
+├── repoIds_simple.json         # 项目 ID 列表
+├── run.py                      # 启动入口
+└── requirements.txt            # 依赖清单
 ```
 
-## ⚙️ 配置说明
+---
 
-### 创建 `config.json`
+## 快速开始
+
+### 1. 环境准备
+
+```bash
+# 确保 Python 3.10+ 已安装
+python --version
+
+# 安装依赖
+pip install -r requirements.txt
+```
+
+### 2. 配置文件
+
+创建 `config.json`：
 
 ```json
 {
-  "server": {
-    "host": "0.0.0.0",
-    "port": 8080,
-    "debug": false
-  },
-  "api_url": "https://merico.idc.hexun.com/buffet/api/tech_debt/function_doc_coverage",
+  "api_url": "https://merico.idc.hexun.com/buffet/re/quality/listFunctions",
   "duplicate_url": "https://merico.idc.hexun.com/buffet/api/tech_debt/duplicated_group",
   "token": "your-merico-token",
   "repo_ids_file": "repoIds_simple.json",
@@ -84,6 +141,7 @@ mericoComment/
     "model": "glm-4.5-flash"
   },
   "tapd": {
+    "base_url": "https://www.tapd.cn/api/devops/source_code",
     "cookies": {
       "tapdsession": "your-session",
       "t_u": "your-t-u"
@@ -92,135 +150,178 @@ mericoComment/
   "request_settings": {
     "timeout": 30,
     "retry_times": 3,
-    "retry_delay": 2.0,
+    "retry_delay": 2,
     "batch_delay": 0.5,
     "page_size": 100
   },
   "output_settings": {
-    "output_dir": "output",
-    "log_dir": "log",
+    "save_raw": true,
     "save_classified": true,
     "pretty_print": true
-  },
-  "schedule": {
-    "enabled": true,
-    "hour": 7,
-    "minute": 0
   }
 }
 ```
 
-> 💡 **提示**：敏感数据建议通过环境变量配置（如 `MERICO_TOKEN`, `ZHIPU_API_KEY`）。
-
-## 🚀 使用指南
-
-### 1. 启动Web服务
+### 3. 启动服务
 
 ```bash
 python run.py serve --port 8080
 ```
 
-访问仪表盘：`http://localhost:8080`
+访问 **http://localhost:8080**
 
-### 2. 执行分析任务
+---
 
-```bash
-# 运行全部分析
-python run.py analyze --type all
+## 前端 Token 配置
 
-# 执行特定分析
-python run.py analyze --type uncommented
-python run.py analyze --type duplicate
+由于 Merico API Token 每日更新，系统支持在 Web 界面直接配置：
 
-# 生成周报
-python run.py weekly \
-  --entity-id "your-entity-id" \
-  --workspace-id "your-workspace-id"
-```
+1. 打开首页
+2. 在 **Token 配置** 区域输入新的 Token
+3. 点击 **保存** 按钮
+4. Token 保存在浏览器 localStorage，刷新不丢失
+5. 运行分析时自动使用保存的 Token
 
-### 3. API接口列表
+**优先级**：前端 Token > config.json Token > 环境变量
 
-| 接口地址 | 方法 | 说明 |
-|----------|--------|-------------|
-| `/api/health` | GET | 服务健康检查 |
-| `/api/status` | GET | 服务状态详情 |
-| `/api/analysis/uncommented/run` | POST | 执行未注释分析 |
-| `/api/analysis/duplicate/run` | POST | 执行重复代码分析 |
-| `/api/weekly-report/generate` | POST | 生成AI周报 |
-| `/api/analysis/reports` | GET | 报告列表查询 |
+---
 
-### 4. Web界面导航
+## CLI 命令
 
-- **仪表盘**：`http://localhost:8080`
-- **重复代码报告**：`/duplicate-functions`
-- **未注释函数报告**：`/uncommented-functions`
-
-![仪表盘截图](screenshots/dashboard.png)
-
-## 📊 报告功能亮点
-
-### 交互式可视化
-- 严重程度分布（环形图）
-- 函数类型排名（柱状图）
-- 项目质量排行榜
-
-### 多格式导出
-- 嵌入图表的HTML报告
-- 数据分析专用CSV
-- Markdown周报文档
-
-### 报告示例
-
-![报告样例](screenshots/report.png)
-
-## ⚡ 高级用法
-
-### 自定义报告提示词
+### 启动 Web 服务
 
 ```bash
-python run.py weekly \
-  --entity-id xxx \
-  --prompt "重点关注本周性能优化内容"
+python run.py serve [OPTIONS]
+
+# 选项:
+#   --host       绑定地址 (默认: 0.0.0.0)
+#   --port, -p   端口号 (默认: 8080)
+#   --debug, -d  调试模式
+#   --config, -c 配置文件路径
 ```
 
-### 数据深度分析
+### 运行代码分析
 
 ```bash
-python run.py data-analyze \
-  --file output/classified_results_20240101.json \
-  --export-html
+python run.py analyze --type [all|uncommented|duplicate]
+
+# 示例:
+python run.py analyze --type all          # 运行所有分析
+python run.py analyze --type uncommented  # 仅分析未注释函数
+python run.py analyze --type duplicate    # 仅分析重复函数
 ```
 
-### 定时任务配置
+### 分析已有数据
 
-在 `config.json` 中设置自动执行：
+```bash
+python run.py data-analyze --file <path> [--export-csv] [--export-html]
+
+# 示例:
+python run.py data-analyze -f output/classified_results_xxx.json --export-html
+```
+
+### 生成周报
+
+```bash
+python run.py weekly --entity-id <id> --workspace-id <id> [OPTIONS]
+
+# 选项:
+#   --prompt, -P      自定义提示词
+#   --no-save         不保存到文件
+#   --print-report    打印周报内容
+
+# 示例:
+python run.py weekly -e 123456 -w 789012 --print-report
+```
+
+### 获取重复函数数据
+
+```bash
+python run.py fetch-duplicate
+```
+
+---
+
+## API 文档
+
+### 分析接口
+
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/analysis/uncommented/run` | POST | 运行未注释函数分析 |
+| `/api/analysis/duplicate/run` | POST | 运行重复函数分析 |
+| `/api/analysis/all/run` | POST | 运行所有分析 |
+| `/api/analysis/reports` | GET | 获取报告列表 |
+| `/api/analysis/reports/<filename>` | GET | 下载报告文件 |
+
+**请求体** (可选)：
 
 ```json
-"schedule": {
-  "enabled": true,
-  "hour": 7,
-  "minute": 0
+{
+  "token": "Bearer Token (可选，覆盖配置文件中的 token)"
 }
 ```
 
-## 🔧 问题排查
+### 周报接口
 
-| 问题现象 | 解决方案 |
-|-------|----------|
-| `401 Unauthorized` | 更新配置中的token |
-| `429 Too Many Requests` | 增大batch_delay值 |
-| 报告生成失败 | 检查output_dir目录权限 |
-| TAPD连接异常 | 验证tapd配置中的cookies |
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/weekly-report/generate` | POST | 生成周报 |
 
-## 🌐 技术栈
+### 对话接口
 
-- **后端框架**：Python 3.10+
-- **Web框架**：Flask
-- **AI引擎**：智谱AI（GLM-4.5）
-- **任务调度**：APScheduler
-- **数据可视化**：Chart.js
-- **模板引擎**：Jinja2
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/chat/session` | POST | 创建对话会话 |
+| `/api/chat/message` | POST | 发送对话消息 |
 
-## 📄 许可证
+### 系统接口
 
-MIT 开源许可证
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/health` | GET | 健康检查 |
+| `/api/status` | GET | 服务状态 |
+
+---
+
+## 环境变量
+
+支持通过环境变量覆盖配置：
+
+| 变量名 | 描述 |
+|--------|------|
+| `MERICO_TOKEN` | Merico API Token |
+| `MERICO_API_URL` | Merico API 地址 |
+| `ZHIPU_API_KEY` | 智谱 AI API Key |
+
+**优先级**：环境变量 > config.json > 默认值
+
+---
+
+## 问题排查
+
+| 问题 | 解决方案 |
+|------|----------|
+| `401 Unauthorized` | 检查 Token 是否过期，在前端重新配置 |
+| `429 Too Many Requests` | 增大 `batch_delay` 值 |
+| 报告生成失败 | 检查 `output` 目录权限 |
+| 智能体无响应 | 检查 `zhipu_ai.api_key` 是否正确 |
+| TAPD 连接异常 | 重新登录获取 cookies |
+
+---
+
+## 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| **Backend** | Python 3.10+, Flask, APScheduler |
+| **AI** | ZhipuAI (GLM-4) |
+| **Frontend** | HTML5, CSS3 (Glassmorphism), JavaScript |
+| **Visualization** | Chart.js |
+| **HTTP Client** | Requests |
+
+---
+
+## License
+
+MIT License

@@ -49,7 +49,10 @@ class HttpClient:
 
     def set_auth_token(self, token: str) -> None:
         """设置 Bearer Token 认证"""
-        self._session.headers['Authorization'] = f'Bearer {token}'
+        if token.startswith("Bearer "):
+            self._session.headers['Authorization'] = token
+        else:
+            self._session.headers['Authorization'] = f'Bearer {token}'
 
     def set_cookies(self, cookies: Dict[str, str]) -> None:
         """设置 Cookies"""
