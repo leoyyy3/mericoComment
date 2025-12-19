@@ -5,6 +5,6 @@ API 模块
 """
 
 from .app import create_app
-from .routes import health_bp, analysis_bp, weekly_bp
+from .routes import health_bp, analysis_bp, weekly_bp, task_bp
 
-__all__ = ['create_app', 'health_bp', 'analysis_bp', 'weekly_bp']
+__all__ = ['create_app', 'health_bp', 'analysis_bp', 'weekly_bp', 'task_bp']

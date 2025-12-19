@@ -167,10 +167,16 @@ _settings: Optional[Settings] = None
 
 
 def get_settings() -> Settings:
-    """获取全局配置实例"""
+    """
+    获取全局配置实例。
+    如果尚未初始化，则尝试通过 ConfigLoader 自动加载默认配置文件。
+    """
     global _settings
     if _settings is None:
-        _settings = Settings()
+        # 延迟导入以避免循环依赖
+        from .loader import ConfigLoader
+        loader = ConfigLoader()
+        _settings = loader.load()
     return _settings
 
 

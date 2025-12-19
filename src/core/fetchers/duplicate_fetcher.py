@@ -218,6 +218,29 @@ class DuplicateFunctionsFetcher:
             if len(failed) > 10:
                 print(f"  ... 还有 {len(failed) - 10} 个")
 
+    def analyze(self, repo_id: str) -> Dict[str, Any]:
+        """
+        分析单个项目
+        
+        Args:
+            repo_id: 项目 ID
+            
+        Returns:
+            获取到的重复函数数据
+        """
+        self.logger.info(f"正在获取单个项目的重复函数: {repo_id}")
+        
+        result = self.fetch_duplicate_functions(repo_id)
+        if not result:
+            return {
+                "repo_id": repo_id,
+                "error": "Failed to fetch data",
+                "total": 0,
+                "data": []
+            }
+            
+        return result
+
     def run(self) -> Dict[str, Any]:
         """执行完整流程"""
         self.logger.info("Merico 重复函数列表获取工具")

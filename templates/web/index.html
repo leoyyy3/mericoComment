@@ -42,6 +42,20 @@
     </div>
 </div>
 
+<!-- Global Analysis Status Panel -->
+<div id="analysisStatusPanel" class="glass-panel mt-4" style="display: none; padding: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 id="status-title" style="font-size: 1.25rem; color: var(--text-main); margin: 0;">任务执行中...</h3>
+        <span id="status-badge" class="badge">排队中</span>
+    </div>
+    <div class="progress-wrapper mb-3"
+        style="height: 10px; background: rgba(0,0,0,0.05); border-radius: 5px; overflow: hidden;">
+        <div id="progressBar" class="progress-bar"
+            style="width: 0%; height: 100%; background: var(--primary-color); transition: width 0.3s ease;"></div>
+    </div>
+    <div id="status-text" style="font-size: 0.9rem; color: var(--text-secondary);">等待初始化...</div>
+</div>
+
 <!-- Token Configuration Panel -->
 <div class="glass-panel" style="padding: 30px; margin-top: 40px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -60,6 +74,9 @@
     <div id="tokenStatus" class="mt-2" style="font-size: 0.9rem; margin-left: 5px;"></div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
 <script>
     const TOKEN_KEY = 'merico_api_token';
 
@@ -68,7 +85,12 @@
         updateTokenStatus();
 
         // Highlight active nav
-        document.querySelector('a[href="/"]').classList.add('active');
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === '/') {
+                link.classList.add('active');
+            }
+        });
     });
 
     function getToken() {
@@ -77,11 +99,13 @@
 
     function loadToken() {
         const token = getToken();
-        document.getElementById('tokenInput').value = token;
+        const input = document.getElementById('tokenInput');
+        if (input) input.value = token;
     }
 
     function saveToken() {
-        const token = document.getElementById('tokenInput').value.trim();
+        const tokenInput = document.getElementById('tokenInput');
+        const token = tokenInput ? tokenInput.value.trim() : '';
         if (!token) {
             alert('请输入有效的 Token');
             return;
@@ -94,7 +118,8 @@
     function clearToken() {
         if (confirm('确定要清除保存的 Token 吗?')) {
             localStorage.removeItem(TOKEN_KEY);
-            document.getElementById('tokenInput').value = '';
+            const input = document.getElementById('tokenInput');
+            if (input) input.value = '';
             updateTokenStatus();
         }
     }
@@ -102,6 +127,8 @@
     function updateTokenStatus() {
         const token = getToken();
         const statusEl = document.getElementById('tokenStatus');
+        if (!statusEl) return;
+
         if (token) {
             const maskedToken = token.substring(0, 10) + '...' + token.substring(token.length - 6);
             statusEl.innerHTML = `<span class="badge badge-success">✓ 已保存 Token: ${maskedToken}</span>`;
@@ -122,33 +149,79 @@
             return;
         }
 
-        if (!confirm(`确定要运行${messages[type]}吗? 这可能需要几分钟时间。`)) {
+        if (!confirm(`确定要运行 ${messages[type]} 吗? 这可能需要几分钟时间。`)) {
             return;
         }
 
-        const btn = event.target;
+        const btn = event.currentTarget;
         const originalText = btn.textContent;
         btn.disabled = true;
-        btn.textContent = '⏳ 分析中...';
+        btn.textContent = '⏳ 已提交...';
+
+        // 显示状态面板
+        const panel = document.getElementById('analysisStatusPanel');
+        const progressBar = document.getElementById('progressBar');
+        const statusText = document.getElementById('status-text');
+        const statusBadge = document.getElementById('status-badge');
+        const statusTitle = document.getElementById('status-title');
+
+        if (panel) panel.style.display = 'block';
+        if (statusTitle) statusTitle.textContent = `${messages[type]} 执行中`;
+        if (progressBar) progressBar.style.width = '5%';
+        if (statusText) statusText.textContent = '正在连接服务器...';
 
         try {
-            const requestBody = token ? { token: token } : {};
+            const options = token ? { token: token } : {};
             const response = await fetch(`/api/analysis/${type}/run`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify({ ...options, background: true })
             });
             const data = await response.json();
 
-            if (data.success) {
-                alert(`✅ ${messages[type]}完成!`);
-                location.reload();
-            } else {
-                alert('❌ 分析失败: ' + data.error);
+            if (!data.success) {
+                throw new Error(data.error || '提交任务失败');
             }
+
+            const taskId = data.data.task_id;
+            if (statusText) statusText.textContent = `任务已入队 (ID: ${taskId})`;
+
+            // 开始轮询
+            if (window.taskManager) {
+                window.taskManager.pollUntilDone(taskId, {
+                    onStatusChange: (status) => {
+                        const statusMap = {
+                            'queued': { text: '排队中...', class: 'badge-warning', progress: '10%' },
+                            'started': { text: '正在处理...', class: 'badge-info', progress: '40%' },
+                            'finished': { text: '分析完成', class: 'badge-success', progress: '100%' },
+                            'failed': { text: '分析失败', class: 'badge-danger', progress: '0%' }
+                        };
+                        const info = statusMap[status.status] || { text: status.status, class: 'badge-secondary', progress: '50%' };
+
+                        if (statusBadge) {
+                            statusBadge.textContent = info.text;
+                            statusBadge.className = `badge ${info.class}`;
+                        }
+                        if (progressBar) progressBar.style.width = info.progress;
+                        if (statusText) statusText.textContent = `当前进度: ${info.text}`;
+                    },
+                    onSuccess: (result) => {
+                        if (statusText) statusText.textContent = '分析已完成，页面即将刷新查看结果。';
+                        setTimeout(() => location.reload(), 2000);
+                    },
+                    onError: (error) => {
+                        if (statusText) statusText.textContent = `错误: ${error}`;
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
+                });
+            } else {
+                throw new Error('未加载任务管理器脚本');
+            }
+
         } catch (error) {
-            alert('❌ 请求失败: ' + error.message);
-        } finally {
+            alert('❌ 失败: ' + error.message);
+            if (panel) panel.style.display = 'none';
             btn.disabled = false;
             btn.textContent = originalText;
         }

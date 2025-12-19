@@ -9,5 +9,6 @@ from .analysis import analysis_bp
 from .weekly import weekly_bp
 from .web import web_bp
 from .chat import chat_bp
+from .task_route import task_bp
 
-__all__ = ['health_bp', 'analysis_bp', 'weekly_bp', 'web_bp', 'chat_bp']
+__all__ = ['health_bp', 'analysis_bp', 'weekly_bp', 'web_bp', 'chat_bp', 'task_bp']

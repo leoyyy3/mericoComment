@@ -33,16 +33,37 @@ class AnalysisService:
         self._output_dir = Path(settings.output.output_dir if settings else 'output')
         self._output_dir.mkdir(exist_ok=True)
 
-    def run_uncommented_analysis(self, token: str = None) -> Dict[str, Any]:
+    def run_uncommented_analysis(self, token: str = None, background: bool = False) -> Dict[str, Any]:
         """
         运行未注释函数分析
 
         Args:
-            token: 可选的 API Token，如果提供则覆盖配置中的 token
+            token: 可选的 API Token
+            background: 是否在后台运行 (RQ)
 
         Returns:
-            分析结果
+            分析结果或任务信息
         """
+        if background:
+            from src.tasks import get_queue, TaskQueue, analyze_uncommented
+            queue = get_queue(TaskQueue.DEFAULT)
+            # 获取当前仓库路径（从配置中）
+            repo_path = getattr(self.settings.merico, 'repo_path', None) if self.settings else None
+            options = {'token': token} if token else {}
+            
+            job = queue.enqueue(
+                analyze_uncommented,
+                repo_path,
+                options,
+                job_timeout=600,
+                result_ttl=3600
+            )
+            return {
+                'status': 'queued',
+                'task_id': job.id,
+                'message': '未注释函数分析任务已提交至队列'
+            }
+
         logger.info("开始执行未注释函数分析...")
 
         try:
@@ -67,16 +88,36 @@ class AnalysisService:
             logger.error(f"未注释函数分析失败: {e}", exc_info=True)
             raise
 
-    def run_duplicate_analysis(self, token: str = None) -> Dict[str, Any]:
+    def run_duplicate_analysis(self, token: str = None, background: bool = False) -> Dict[str, Any]:
         """
         运行重复函数分析
 
         Args:
-            token: 可选的 API Token，如果提供则覆盖配置中的 token
+            token: 可选的 API Token
+            background: 是否在后台运行 (RQ)
 
         Returns:
-            分析结果
+            分析结果或任务信息
         """
+        if background:
+            from src.tasks import get_queue, TaskQueue, analyze_duplicate
+            queue = get_queue(TaskQueue.DEFAULT)
+            repo_path = getattr(self.settings.merico, 'repo_path', None) if self.settings else None
+            options = {'token': token} if token else {}
+
+            job = queue.enqueue(
+                analyze_duplicate,
+                repo_path,
+                options,
+                job_timeout=600,
+                result_ttl=3600
+            )
+            return {
+                'status': 'queued',
+                'task_id': job.id,
+                'message': '重复函数分析任务已提交至队列'
+            }
+
         logger.info("开始执行重复函数分析...")
 
         try:
@@ -103,16 +144,36 @@ class AnalysisService:
             logger.error(f"重复函数分析失败: {e}", exc_info=True)
             raise
 
-    def run_all(self, token: str = None) -> Dict[str, Any]:
+    def run_all(self, token: str = None, background: bool = False) -> Dict[str, Any]:
         """
         运行所有分析
 
         Args:
-            token: 可选的 API Token，如果提供则覆盖配置中的 token
+            token: 可选的 API Token
+            background: 是否在后台运行 (RQ)
 
         Returns:
-            分析结果
+            分析结果或任务信息
         """
+        if background:
+            from src.tasks import get_queue, TaskQueue, analyze_all
+            queue = get_queue(TaskQueue.DEFAULT)
+            repo_path = getattr(self.settings.merico, 'repo_path', None) if self.settings else None
+            options = {'token': token} if token else {}
+
+            job = queue.enqueue(
+                analyze_all,
+                repo_path,
+                options,
+                job_timeout=1200,
+                result_ttl=3600
+            )
+            return {
+                'status': 'queued',
+                'task_id': job.id,
+                'message': '全量分析任务已提交至队列'
+            }
+
         logger.info("开始执行完整分析...")
 
         results = {

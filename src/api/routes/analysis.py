@@ -41,21 +41,23 @@ def run_uncommented_analysis():
 
         settings = current_app.config.get('SETTINGS')
 
-        # 从请求中获取 token
+        # 从请求中获取 token 和 background
         token = None
+        background = False
         if request.is_json and request.json:
             token = request.json.get('token')
+            background = request.json.get('background', False)
 
         # 动态导入避免循环依赖
         from src.services import AnalysisService
         service = AnalysisService(settings)
-        result = service.run_uncommented_analysis(token=token)
+        result = service.run_uncommented_analysis(token=token, background=background)
 
-        logger.info("未注释函数分析完成")
+        logger.info(f"未注释函数分析已提交 (background={background})")
 
         return ResponseFormatter.success(
             data=result,
-            message='未注释函数分析完成'
+            message='未注释函数分析任务已提交' if background else '未注释函数分析完成'
         )
 
     except FileNotFoundError as e:
@@ -84,20 +86,22 @@ def run_duplicate_analysis():
 
         settings = current_app.config.get('SETTINGS')
 
-        # 从请求中获取 token
+        # 从请求中获取 token 和 background
         token = None
+        background = False
         if request.is_json and request.json:
             token = request.json.get('token')
+            background = request.json.get('background', False)
 
         from src.services import AnalysisService
         service = AnalysisService(settings)
-        result = service.run_duplicate_analysis(token=token)
+        result = service.run_duplicate_analysis(token=token, background=background)
 
-        logger.info("重复函数分析完成")
+        logger.info(f"重复函数分析已提交 (background={background})")
 
         return ResponseFormatter.success(
             data=result,
-            message='重复函数分析完成'
+            message='重复函数分析任务已提交' if background else '重复函数分析完成'
         )
 
     except Exception as e:
@@ -122,20 +126,22 @@ def run_all_analysis():
 
         settings = current_app.config.get('SETTINGS')
 
-        # 从请求中获取 token
+        # 从请求中获取 token 和 background
         token = None
+        background = False
         if request.is_json and request.json:
             token = request.json.get('token')
+            background = request.json.get('background', False)
 
         from src.services import AnalysisService
         service = AnalysisService(settings)
-        result = service.run_all(token=token)
+        result = service.run_all(token=token, background=background)
 
-        logger.info("完整分析完成")
+        logger.info(f"完整分析已提交 (background={background})")
 
         return ResponseFormatter.success(
             data=result,
-            message='完整分析完成'
+            message='完整分析任务已提交' if background else '完整分析完成'
         )
 
     except Exception as e:

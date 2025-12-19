@@ -217,6 +217,30 @@ class UncommentedFunctionsAgent:
         except Exception as e:
             self.logger.error(f"保存结果失败: {e}")
 
+    def analyze(self, repo_id: str, authors: Optional[List[str]] = None) -> Dict[str, Any]:
+        """
+        分析单个项目
+        
+        Args:
+            repo_id: 项目 ID
+            authors: 可选的作者列表
+            
+        Returns:
+            归类后的分析结果
+        """
+        self.logger.info(f"正在分析单个项目: {repo_id}")
+        
+        result = self.fetch_uncommented_functions(repo_id, authors)
+        if not result:
+            return {
+                "summary": {"total_uncommented_functions": 0},
+                "repo_id": repo_id,
+                "error": "Failed to fetch data"
+            }
+            
+        # 归类数据并返回
+        return self.classify_data([result])
+
     def generate_report(self, classified: Dict[str, Any]) -> str:
         """生成可读性报告"""
         report = []
