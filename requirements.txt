@@ -7,3 +7,4 @@ zhipuai>=2.0.0
 rq>=1.15.0
 redis>=5.0.0
 rq-dashboard>=0.6.1
+python-dotenv>=1.0.0

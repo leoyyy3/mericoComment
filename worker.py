@@ -29,7 +29,7 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 from rq import Worker, Queue
-from src.tasks.connection import redis_conn
+from src.tasks.connection import get_redis_connection
 from src.utils import LoggerFactory
 
 logger = LoggerFactory.get_logger('rq.worker')
@@ -55,20 +55,16 @@ def main():
     )
 
     args = parser.parse_args()
-    print("DEBUG: Args parsed")
 
     try:
-        print("DEBUG: Initializing queues...")
+        redis_conn = get_redis_connection()
         queues = [Queue(name, connection=redis_conn) for name in args.queues]
-        print("DEBUG: Queues initialized")
 
-        print("DEBUG: Initializing worker...")
         worker = Worker(
             queues,
             name=args.name,
             connection=redis_conn
         )
-        print("DEBUG: Worker initialized")
 
         logger.info(f"Worker 启动，监听队列: {args.queues}")
 
@@ -77,7 +73,6 @@ def main():
             with_scheduler=True  # 启用调度器支持
         )
     except Exception as e:
-        print(f"ERROR: 发生错误: {e}")
         logger.error(f"Worker 运行出错: {e}")
         sys.exit(1)
 

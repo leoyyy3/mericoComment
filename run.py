@@ -19,10 +19,15 @@ Merico 代码质量分析系统 - 统一入口
 import argparse
 import sys
 from pathlib import Path
+import os
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
+
+# 加载 .env 文件中的环境变量
+from dotenv import load_dotenv
+load_dotenv(project_root / '.env')
 
 
 def cmd_serve(args):
@@ -138,10 +143,14 @@ def main():
 
     subparsers = parser.add_subparsers(dest='command', help='可用命令')
 
+    # 从环境变量获取默认端口，若未设置则使用 8080
+    default_port = int(os.getenv('SERVER_PORT', 8080))
+    default_host = os.getenv('SERVER_HOST', '0.0.0.0')
+
     # serve 命令
     serve_parser = subparsers.add_parser('serve', help='启动 Web 服务')
-    serve_parser.add_argument('--host', default='0.0.0.0', help='绑定地址')
-    serve_parser.add_argument('--port', '-p', type=int, default=8080, help='端口号')
+    serve_parser.add_argument('--host', default=default_host, help='绑定地址')
+    serve_parser.add_argument('--port', '-p', type=int, default=default_port, help='端口号')
     serve_parser.add_argument('--debug', '-d', action='store_true', help='调试模式')
     serve_parser.set_defaults(func=cmd_serve)
 
