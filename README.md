@@ -236,10 +236,23 @@ python worker.py
 python run.py serve [OPTIONS]
 
 选项:
-  --host       绑定地址 (默认: 0.0.0.0)
-  --port, -p   端口号 (默认: 8080)
-  --debug, -d  调试模式
-  --config, -c 配置文件路径
+  --host              绑定地址 (默认: 0.0.0.0)
+  --port, -p          端口号 (默认: 8080)
+  --debug, -d         调试模式（仅开发模式）
+  --production, --prod 生产模式（使用 Gunicorn）
+  --workers, -w       Worker 进程数（仅生产模式）
+  --config, -c        配置文件路径
+
+示例:
+  # 开发模式（Flask 内置服务器）
+  python run.py serve --port 8080 --debug
+
+  # 生产模式（Gunicorn）
+  python run.py serve --production
+  python run.py serve --production --workers 4 --port 8080
+
+  # 或直接使用 Gunicorn
+  gunicorn -c gunicorn.conf.py wsgi:app
 ```
 
 ### 运行代码分析

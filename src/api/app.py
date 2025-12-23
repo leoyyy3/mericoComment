@@ -7,6 +7,7 @@ Flask 应用工厂
 from flask import Flask
 from pathlib import Path
 import sys
+import os
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -35,11 +36,17 @@ def create_app(config_file: str = None) -> Flask:
         log_dir=settings.output.log_dir,
         log_file_prefix='api',
         console_output=True,
-        file_output=True
+        file_output=True,
+        rotation_type='time'
     )
 
     logger = LoggerFactory.get_logger(__name__)
-    logger.info(f"正在创建应用，环境: {settings.env}")
+
+    is_gunicorn = _is_gunicorn_worker()
+
+    # Gunicorn 模式下减少日志输出
+    if not is_gunicorn:
+        logger.info(f"正在创建应用，环境: {settings.env}")
 
     # 创建 Flask 应用
     app = Flask(
@@ -58,13 +65,29 @@ def create_app(config_file: str = None) -> Flask:
     # 注册错误处理器
     _register_error_handlers(app)
 
-    # 初始化定时任务
-    if settings.schedule.enabled:
+    # 初始化定时任务（仅在非 Gunicorn 多进程模式下）
+    # 生产环境建议使用 cron 或 RQ Scheduler
+    if settings.schedule.enabled and not is_gunicorn:
         _init_scheduler(app, settings)
+    elif is_gunicorn and settings.schedule.enabled:
+        logger.debug(f"Gunicorn Worker {os.getpid()}: 跳过定时任务初始化")
 
-    logger.info("应用创建完成")
+    if not is_gunicorn:
+        logger.info("应用创建完成")
 
     return app
+
+
+def _is_gunicorn_worker() -> bool:
+    """检测是否在 Gunicorn Worker 进程中运行"""
+    import sys
+    # 方法1: 检查 sys.argv
+    if any('gunicorn' in arg for arg in sys.argv):
+        return True
+    # 方法2: 检查环境变量（由 gunicorn.conf.py 设置）
+    if os.environ.get('GUNICORN_IS_WORKER') == 'true':
+        return True
+    return False
 
 
 def _register_blueprints(app: Flask) -> None:
@@ -112,6 +135,7 @@ def _init_scheduler(app: Flask, settings) -> None:
     from apscheduler.triggers.cron import CronTrigger
 
     logger = LoggerFactory.get_logger(__name__)
+    logger.info("初始化定时任务...")
 
     scheduler = BackgroundScheduler()
 

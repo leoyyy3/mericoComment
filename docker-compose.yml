@@ -1,0 +1,116 @@
+# ============================================
+# Merico 代码质量分析平台 - Docker Compose 配置
+# ============================================
+#
+# 使用方法:
+#   启动所有服务:  docker-compose up -d
+#   查看日志:      docker-compose logs -f
+#   停止服务:      docker-compose down
+#   重新构建:      docker-compose up -d --build
+#
+# ============================================
+
+version: '3.8'
+
+services:
+  # ============ Redis 服务 ============
+  redis:
+    image: redis:7-alpine
+    container_name: merico-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============ Web 应用服务 ============
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: merico-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # 基础配置
+      - ENV=production
+      - DEBUG=false
+      # Redis 配置
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # API 配置（从 .env 文件读取）
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
+      - MERICO_TOKEN=${MERICO_TOKEN}
+      - MERICO_API_URL=${MERICO_API_URL}
+      - MERICO_DUPLICATE_URL=${MERICO_DUPLICATE_URL}
+      # Gunicorn 配置
+      - GUNICORN_WORKERS=4
+      - GUNICORN_TIMEOUT=120
+    volumes:
+      # 持久化输出目录
+      - ./output:/app/output
+      - ./log:/app/log
+      # 配置文件（可选，也可以用环境变量）
+      - ./config.json:/app/config.json:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============ RQ Worker 服务 ============
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: merico-worker
+    restart: unless-stopped
+    command: python worker.py --queues high default low
+    environment:
+      - ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
+      - MERICO_TOKEN=${MERICO_TOKEN}
+      - MERICO_API_URL=${MERICO_API_URL}
+    volumes:
+      - ./output:/app/output
+      - ./log:/app/log
+      - ./config.json:/app/config.json:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ============ RQ Dashboard（可选）============
+  rq-dashboard:
+    image: eoranged/rq-dashboard:latest
+    container_name: merico-rq-dashboard
+    restart: unless-stopped
+    ports:
+      - "9181:9181"
+    environment:
+      - RQ_DASHBOARD_REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    profiles:
+      - monitoring  # 使用 --profile monitoring 启动
+
+# ============ 数据卷 ============
+volumes:
+  redis_data:
+    driver: local
+
+# ============ 网络配置 ============
+networks:
+  default:
+    name: merico-network

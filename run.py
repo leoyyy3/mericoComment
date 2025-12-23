@@ -3,8 +3,12 @@
 Merico 代码质量分析系统 - 统一入口
 
 使用方法:
-    # 启动 Web 服务
+    # 启动 Web 服务（开发模式）
     python run.py serve --port 8080
+
+    # 启动 Web 服务（生产模式，使用 Gunicorn）
+    python run.py serve --production
+    python run.py serve --production --workers 4
 
     # 运行分析
     python run.py analyze --type all
@@ -32,19 +36,58 @@ load_dotenv(project_root / '.env')
 
 def cmd_serve(args):
     """启动 Web 服务"""
-    from src.api import create_app
+    if args.production:
+        # 生产模式：使用 Gunicorn
+        import subprocess
 
-    app = create_app(args.config)
+        bind = f"{args.host}:{args.port}"
+        cmd = [
+            'gunicorn',
+            '-c', 'gunicorn.conf.py',
+            '-b', bind,
+            'wsgi:app'
+        ]
 
-    print(f"🚀 启动服务: http://{args.host}:{args.port}")
-    print(f"📖 API 文档:")
-    print(f"   - 健康检查: GET  /api/health")
-    print(f"   - 服务状态: GET  /api/status")
-    print(f"   - 分析报告: GET  /api/analysis/reports")
-    print(f"   - 运行分析: POST /api/analysis/all/run")
-    print(f"   - 生成周报: POST /api/weekly-report/generate")
+        # 如果指定了 workers 数量，覆盖配置文件中的设置
+        if args.workers:
+            cmd.extend(['-w', str(args.workers)])
 
-    app.run(host=args.host, port=args.port, debug=args.debug)
+        print(f"🚀 生产模式启动: http://{args.host}:{args.port}")
+        print(f"   Workers: {args.workers or 'auto'}")
+        print(f"   配置文件: gunicorn.conf.py")
+        print(f"📖 API 文档:")
+        print(f"   - 健康检查: GET  /api/health")
+        print(f"   - 服务状态: GET  /api/status")
+        print(f"   - 分析报告: GET  /api/analysis/reports")
+        print(f"   - 运行分析: POST /api/analysis/all/run")
+        print(f"   - 生成周报: POST /api/weekly-report/generate")
+
+        try:
+            subprocess.run(cmd, check=True)
+        except FileNotFoundError:
+            print("\n❌ 错误: 未找到 gunicorn，请先安装:")
+            print("   pip install gunicorn")
+            sys.exit(1)
+        except subprocess.CalledProcessError as e:
+            print(f"\n❌ Gunicorn 启动失败: {e}")
+            sys.exit(1)
+    else:
+        # 开发模式：使用 Flask 内置服务器
+        from src.api import create_app
+
+        app = create_app(args.config)
+
+        print(f"🚀 开发模式启动: http://{args.host}:{args.port}")
+        print(f"   ⚠️  警告: Flask 开发服务器不适合生产环境")
+        print(f"   💡 生产环境请使用: python run.py serve --production")
+        print(f"📖 API 文档:")
+        print(f"   - 健康检查: GET  /api/health")
+        print(f"   - 服务状态: GET  /api/status")
+        print(f"   - 分析报告: GET  /api/analysis/reports")
+        print(f"   - 运行分析: POST /api/analysis/all/run")
+        print(f"   - 生成周报: POST /api/weekly-report/generate")
+
+        app.run(host=args.host, port=args.port, debug=args.debug)
 
 
 def cmd_analyze(args):
@@ -151,7 +194,9 @@ def main():
     serve_parser = subparsers.add_parser('serve', help='启动 Web 服务')
     serve_parser.add_argument('--host', default=default_host, help='绑定地址')
     serve_parser.add_argument('--port', '-p', type=int, default=default_port, help='端口号')
-    serve_parser.add_argument('--debug', '-d', action='store_true', help='调试模式')
+    serve_parser.add_argument('--debug', '-d', action='store_true', help='调试模式（仅开发模式）')
+    serve_parser.add_argument('--production', '--prod', action='store_true', help='生产模式（使用 Gunicorn）')
+    serve_parser.add_argument('--workers', '-w', type=int, help='Worker 进程数（仅生产模式）')
     serve_parser.set_defaults(func=cmd_serve)
 
     # analyze 命令

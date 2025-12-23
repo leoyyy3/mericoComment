@@ -3,6 +3,7 @@
 """
 
 import logging
+import logging.handlers
 import sys
 from pathlib import Path
 from datetime import datetime
@@ -31,7 +32,11 @@ class LoggerFactory:
         log_file_prefix: str = 'app',
         console_output: bool = True,
         file_output: bool = True,
-        format_string: Optional[str] = None
+        format_string: Optional[str] = None,
+        rotation_type: str = 'size',
+        max_bytes: int = 1024 * 1024 * 100, # 100MB
+        backup_count: int = 10,
+        when: str = 'midnight'
     ) -> None:
         """
         配置全局日志
@@ -59,10 +64,32 @@ class LoggerFactory:
             handlers.append(console_handler)
 
         # 文件处理器
+        # if file_output:
+        #     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        #     log_file = log_dir / f'{log_file_prefix}_{timestamp}.log'
+        #     file_handler = logging.FileHandler(log_file, encoding='utf-8')
+        #     file_handler.setLevel(level)
+        #     handlers.append(file_handler)
+
+        # 轮转日志
         if file_output:
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            log_file = log_dir / f'{log_file_prefix}_{timestamp}.log'
-            file_handler = logging.FileHandler(log_file, encoding='utf-8')
+            log_file = log_dir / f'{log_file_prefix}.log'
+
+            if rotation_type == 'size':
+                file_handler = logging.handlers.RotatingFileHandler(
+                    log_file,
+                    maxBytes=max_bytes,
+                    backupCount=backup_count,
+                    encoding='utf-8'
+                )
+            elif rotation_type == 'time':
+                file_handler = logging.handlers.TimedRotatingFileHandler(
+                    log_file,
+                    when=when,
+                    encoding='utf-8',
+                    interval=1,
+                    backupCount=backup_count
+                )
             file_handler.setLevel(level)
             handlers.append(file_handler)
 
