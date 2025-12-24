@@ -13,19 +13,63 @@
 
 ### 1. 安装 Docker（如未安装）
 
+#### Linux (Ubuntu/Debian)
+
 ```bash
-# Ubuntu/Debian
 curl -fsSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
-
-# CentOS/RHEL
-sudo yum install -y docker-ce docker-ce-cli containerd.io
-sudo systemctl start docker
-sudo systemctl enable docker
 
 # 安装 Docker Compose
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
+```
+
+#### Linux (CentOS/RHEL)
+
+```bash
+sudo yum install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+#### Windows
+
+1. **下载 Docker Desktop**
+   - 访问 https://www.docker.com/products/docker-desktop/
+   - 下载 Windows 版本安装包
+
+2. **安装要求**
+   - Windows 10/11 64位（专业版、企业版或教育版）
+   - 启用 WSL 2（Windows Subsystem for Linux）
+   - 启用 Hyper-V 虚拟化
+
+3. **启用 WSL 2**
+   ```powershell
+   # 以管理员身份运行 PowerShell
+   wsl --install
+   wsl --set-default-version 2
+   ```
+
+4. **安装并启动 Docker Desktop**
+   - 运行安装程序，按提示完成安装
+   - 重启电脑
+   - 启动 Docker Desktop
+   - 等待 Docker 引擎启动（托盘图标变绿）
+
+5. **验证安装**
+   ```powershell
+   docker --version
+   docker-compose --version
+   ```
+
+#### macOS
+
+```bash
+# 使用 Homebrew 安装
+brew install --cask docker
+
+# 或下载 Docker Desktop
+# https://www.docker.com/products/docker-desktop/
 ```
 
 ### 2. 准备项目文件
